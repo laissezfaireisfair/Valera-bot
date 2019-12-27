@@ -1,0 +1,5 @@
+*.db
+log.txt
+*.pyc
+__pycache__/
+auth.py
