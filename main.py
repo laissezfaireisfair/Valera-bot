@@ -1,17 +1,23 @@
-import telebot
+import telegram.ext
 import auth
+import logging
 
-bot = telebot.TeleBot(auth.token)
+def start(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text='Купи слона')
 
-@bot.message_handler(content_types=['text'])
-def get_text_messages(message):
-    if (message.text == '/start'):
-        answ = 'Купи слона.'
-    else:
-        answ = 'Все говорят: \"' + message.text + '\", а ты купи слона.'
-    bot.send_message(message.from_user.id, answ)
+def echo(update, context):
+    answerText = 'Все говорят: \"' + update.message.text + '\", а ты купи слона'
+    context.bot.send_message(chat_id=update.effective_chat.id, text=answerText)
 
 def main():
-    bot.polling(none_stop=True, interval=0)
+    updater = telegram.ext.Updater(token = auth.token, use_context = True)
+    dispatcher = updater.dispatcher
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s -%(message)s', level=logging.INFO)
+    startHandler = telegram.ext.CommandHandler('start', start)
+    dispatcher.add_handler(startHandler)
+    echoHandler = telegram.ext.MessageHandler(telegram.ext.Filters.text, echo)
+    dispatcher.add_handler(echoHandler)
+    updater.start_polling()
 
 main()
