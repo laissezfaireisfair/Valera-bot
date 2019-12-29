@@ -1,23 +1,28 @@
-import telegram.ext
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 import auth
 import logging
+import dialogs
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text='Купи слона')
+                             text=dialogs.start)
 
-def echo(update, context):
-    answerText = 'Все говорят: \"' + update.message.text + '\", а ты купи слона'
-    context.bot.send_message(chat_id=update.effective_chat.id, text=answerText)
+def help(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=dialogs.help)
 
 def main():
-    updater = telegram.ext.Updater(token = auth.token, use_context = True)
+    updater = Updater(token = auth.token, use_context = True)
     dispatcher = updater.dispatcher
+
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s -%(message)s', level=logging.INFO)
-    startHandler = telegram.ext.CommandHandler('start', start)
+
+    startHandler = CommandHandler('start', start)
     dispatcher.add_handler(startHandler)
-    echoHandler = telegram.ext.MessageHandler(telegram.ext.Filters.text, echo)
-    dispatcher.add_handler(echoHandler)
+
+    helpHandler = CommandHandler('help', help)
+    dispatcher.add_handler(helpHandler)
+    
     updater.start_polling()
 
 main()
